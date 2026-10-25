@@ -8,6 +8,7 @@ A working, **local-first web application** for tracking software projects and th
 - Filter by project name, lane, or verification gate
 - JSON backup download and JSON restore with basic schema validation
 - Local browser persistence; no account, API key or cloud backend
+- Read-only public GitHub Actions monitor for four repositories, initiated by a button; distinguishes passed, failed, pending and unavailable. It needs internet access when clicked.
 - Accessible responsive layout, no external runtime dependency
 
 ## Run and test
