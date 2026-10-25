@@ -34,8 +34,8 @@ form{display:flex;gap:10px;flex-wrap:wrap}.hint{font-size:.8rem;margin:10px 0}
 <div class="toolbar" style="margin-top:15px"><input id="search" type="search" placeholder="Filter projects…" aria-label="Filter projects"><button id="backup" type="button">Export backup</button><label style="margin:0">Import JSON <input id="restore" type="file" accept=".json,application/json" style="max-width:190px"></label></div><p id="notice" role="status" aria-live="polite"></p><p class="hint">Backup files may contain your notes. Do not upload them to public repositories.</p></section>
 <section class="panel" aria-labelledby="ci-title">
 <h2 id="ci-title">GitHub build checks</h2>
-<p>Read-only results from the four PUBLIC repositories. Click to request the latest recorded GitHub Actions runs. A passing unit test does not prove a deployment or device test.</p>
-<button type="button" id="refresh-ci">Check all four repositories</button>
+<p>Read-only results from the three PUBLIC software repositories. Click to request the latest recorded GitHub Actions runs. A passing unit test does not prove a deployment or device test.</p>
+<button type="button" id="refresh-ci">Check three software repositories</button>
 <div id="ci-results" class="cards" aria-live="polite" style="margin-top:15px"></div>
 <p class="hint">Only public repositories are queried. Rate limits or network problems appear as unavailable, not failed.</p>
 </section>
