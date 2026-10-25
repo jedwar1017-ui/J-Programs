@@ -1,7 +1,7 @@
 export const STAGES = Object.freeze(["idea", "source-ready", "static-checked", "native-built", "installed", "real-task-verified"]);
 export const SEED = Object.freeze([
   ["Earn Now", "income"], ["AI Collaboration", "build"], ["GitHub Pipeline", "build"],
-  ["Movie Assistant", "build"], ["@Pets", "create"], ["MediaBridge", "build"],
+  ["Movie Assistant", "build"], ["MediaBridge", "build"],
   ["PC Remote", "build"], ["Nexus Shortcuts", "build"], ["J Creative Studio", "create"],
   ["Solar Projects", "create"], ["Maintenance & Skills", "maintain"]
 ].map(([name,lane],index)=>({id:"seed-"+index,name,lane,stage:"idea",evidence:""})));
