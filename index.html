@@ -32,5 +32,12 @@ form{display:flex;gap:10px;flex-wrap:wrap}.hint{font-size:.8rem;margin:10px 0}
 <section class="stats" aria-label="Project statistics"><div class="stat"><b id="count">—</b><span>Total projects</span></div><div class="stat"><b id="active">—</b><span>In progress</span></div><div class="stat"><b id="verified">—</b><span>Real-task verified</span></div></section>
 <section class="panel"><h2>Manage projects</h2><form id="add-form"><input id="new-name" name="name" maxlength="100" required placeholder="New project name" aria-label="New project name"><select id="new-lane" name="lane" aria-label="Project lane"><option value="build">Build</option><option value="income">Earn</option><option value="create">Create</option><option value="maintain">Maintain</option></select><button type="submit">Add project</button></form>
 <div class="toolbar" style="margin-top:15px"><input id="search" type="search" placeholder="Filter projects…" aria-label="Filter projects"><button id="backup" type="button">Export backup</button><label style="margin:0">Import JSON <input id="restore" type="file" accept=".json,application/json" style="max-width:190px"></label></div><p id="notice" role="status" aria-live="polite"></p><p class="hint">Backup files may contain your notes. Do not upload them to public repositories.</p></section>
+<section class="panel" aria-labelledby="ci-title">
+<h2 id="ci-title">GitHub build checks</h2>
+<p>Read-only results from the four PUBLIC repositories. Click to request the latest recorded GitHub Actions runs. A passing unit test does not prove a deployment or device test.</p>
+<button type="button" id="refresh-ci">Check all four repositories</button>
+<div id="ci-results" class="cards" aria-live="polite" style="margin-top:15px"></div>
+<p class="hint">Only public repositories are queried. Rate limits or network problems appear as unavailable, not failed.</p>
+</section>
 <h2>Project register</h2><section id="cards" class="cards" aria-live="polite"></section>
-</main><script type="module" src="./app.mjs"></script></body></html>
+</main><script type="module" src="./app.mjs"></script><script type="module" src="./github-status.mjs"></script></body></html>
