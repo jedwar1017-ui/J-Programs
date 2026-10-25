@@ -9,10 +9,12 @@ function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state.items));re
 function msg(s){$("notice").textContent=s;}
 function element(tag,text,css){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(css)el.className=css;return el;}
 function render(){
-  const s=summarize(state.items);
+  // Keep legacy @Pets entries in local storage/exports, but do not count or show them as software projects.
+  const softwareItems=state.items.filter(p=>p.name!=="@Pets");
+  const s=summarize(softwareItems);
   $("count").textContent=s.total;$("active").textContent=s.inProgress;$("verified").textContent=s.verified;
   const container=$("cards");container.replaceChildren();
-  const matching=state.items.filter(p=>(p.name+" "+p.lane+" "+p.stage).toLowerCase().includes(state.query));
+  const matching=softwareItems.filter(p=>(p.name+" "+p.lane+" "+p.stage).toLowerCase().includes(state.query));
   for(const p of matching){
     const card=element("article",undefined,"card");const head=element("header");const title=element("h3",p.name);head.append(title,element("span",p.lane,"tag"));card.append(head);
     const stageLabel=element("label","Release stage");const stage=element("select");stage.setAttribute("aria-label","Release stage for "+p.name);
