@@ -4,7 +4,7 @@ import {PUBLIC_REPOS,interpretRun,checkOne} from "../github-status.mjs";
 const repo=PUBLIC_REPOS[1];
 const valid={status:"completed",conclusion:"success",head_sha:"a".repeat(40),created_at:"2026-10-25T17:10:55Z",
  html_url:"https://github.com/"+repo.slug+"/actions/runs/40215215178"};
-test("three public software repos",()=>{assert.equal(PUBLIC_REPOS.length,3);assert.equal(new Set(PUBLIC_REPOS.map(x=>x.slug)).size,4);});
+test("three public software repos",()=>{assert.equal(PUBLIC_REPOS.length,3);assert.equal(new Set(PUBLIC_REPOS.map(x=>x.slug)).size,3);});
 test("only completed successful CI is passed",()=>{
  assert.equal(interpretRun({workflow_runs:[valid]},repo.slug).state,"passed");
  assert.equal(interpretRun({workflow_runs:[{...valid,status:"in_progress"}]},repo.slug).state,"pending");
