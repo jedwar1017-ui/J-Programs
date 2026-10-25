@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>J-Programs | Growth OS</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1326;color:#f3f6fe}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#203568,transparent 48%),#0b1326;min-height:100vh}
+main{max-width:1140px;margin:auto;padding:24px 18px 80px}
+header{margin:15px 0 25px}.overline{font-weight:800;color:#89d6ff;letter-spacing:.2em;font-size:.8rem}
+h1{font-size:clamp(2.4rem,7vw,4.3rem);line-height:1.05;margin:10px 0}h2{margin:0 0 10px}
+p,small{color:#b7c6e6;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:26px 0}
+.stat{border:1px solid #36537e;background:#1a2b4c;border-radius:18px;padding:18px}
+.stat b{display:block;font-size:2.3rem}
+.panel{border:1px solid #36537e;background:#14223e;border-radius:18px;padding:18px;margin:16px 0}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+input,select,textarea{background:#081329;color:#fff;border:1px solid #6386b8;border-radius:11px;padding:11px;font:inherit;min-height:44px}
+input[type=search]{flex:1;min-width:190px}textarea{resize:vertical;width:100%;min-height:70px}
+button{background:#88d9ff;color:#061022;border:0;border-radius:10px;padding:12px 17px;font-weight:800;font:inherit;cursor:pointer;min-height:44px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ffed9d;outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:14px}
+.card{background:#1b2d51;padding:18px;border:1px solid #48679c;border-radius:16px}
+.card header{margin:0;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card h3{margin:0;font-size:1.15rem}.tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.11em;color:#9ddcff}
+label{display:block;font-weight:700;margin:12px 0 6px}
+form{display:flex;gap:10px;flex-wrap:wrap}.hint{font-size:.8rem;margin:10px 0}
+#notice{min-height:1.5rem;color:#a8eecc}
+</style>
+</head><body><main>
+<header><div class="overline">GROWTH OS / SOFTWARE CONTROL DESK</div>
+<h1>Build fewer.<br>Finish more.</h1><p>Track each project through evidence-based milestones. All edits stay in this browser unless you export a backup.</p></header>
+<section class="stats" aria-label="Project statistics"><div class="stat"><b id="count">—</b><span>Total projects</span></div><div class="stat"><b id="active">—</b><span>In progress</span></div><div class="stat"><b id="verified">—</b><span>Real-task verified</span></div></section>
+<section class="panel"><h2>Manage projects</h2><form id="add-form"><input id="new-name" name="name" maxlength="100" required placeholder="New project name" aria-label="New project name"><select id="new-lane" name="lane" aria-label="Project lane"><option value="build">Build</option><option value="income">Earn</option><option value="create">Create</option><option value="maintain">Maintain</option></select><button type="submit">Add project</button></form>
+<div class="toolbar" style="margin-top:15px"><input id="search" type="search" placeholder="Filter projects…" aria-label="Filter projects"><button id="backup" type="button">Export backup</button><label style="margin:0">Import JSON <input id="restore" type="file" accept=".json,application/json" style="max-width:190px"></label></div><p id="notice" role="status" aria-live="polite"></p><p class="hint">Backup files may contain your notes. Do not upload them to public repositories.</p></section>
+<h2>Project register</h2><section id="cards" class="cards" aria-live="polite"></section>
+</main><script type="module" src="./app.mjs"></script></body></html>
