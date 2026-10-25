@@ -1,10 +1,9 @@
-// Read-only, opt-in monitor for the four PUBLIC project repositories.
+// Read-only, opt-in monitor for the three PUBLIC software project repositories.
 // No credentials, private repositories, deployment claims, or token storage.
 export const PUBLIC_REPOS = Object.freeze([
   {label:"Nexus Shortcuts",slug:"jedwar1017-ui/-jedwar1017-ui-nexus-shortcuts"},
   {label:"J-Programs",slug:"jedwar1017-ui/J-Programs"},
-  {label:"J Creative Studio",slug:"jedwar1017-ui/J-Creative-Studio"},
-  {label:"@Pets Playground",slug:"jedwar1017-ui/pets-playground"}
+  {label:"J Creative Studio",slug:"jedwar1017-ui/J-Creative-Studio"}
 ]);
 export function interpretRun(payload, slug){
   const run=Array.isArray(payload?.workflow_runs)?payload.workflow_runs[0]:null;
