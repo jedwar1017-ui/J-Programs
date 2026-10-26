@@ -1,12 +1,13 @@
 # QA REPORT — J-Programs
-Date: 2026-10-25
+Date: 2026-10-26 (replaces the 2026-10-25 report)
 
 ## Executed
-- Fetched the current `registry.mjs` source through connected GitHub.
-- Executed four isolated JavaScript logic checks: eleven seed entries; initial verified count zero; no verified credit without evidence; next release gate order.
-- Result: **4/4 checks passed**.
+- Repository test suite on `main` (`145abc66`): `node --test tests/*.test.mjs` → **16/16 passed** locally on Node 22.
+- GitHub Actions *Project register unit tests* on `main` `145abc66`: **passed** — run 40253195858.
+- Page wiring: every element ID used by `app.mjs` exists in `index.html` (11/11).
 
 ## Not tested
-- The repository's own Node test suite or CI run; mobile UI; localStorage; JSON backup/restore browser workflow; deployed hosting.
+- Real browser on phone or desktop: layout, localStorage persistence, JSON backup/restore, live CI-status button.
+- Hosted deployment (none is configured).
 
-**Release state: logic-checked source prototype; browser end-to-end unverified.**
+**Release state: unit-tested, CI-passing source prototype; real-browser use unverified.**
