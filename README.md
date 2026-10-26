@@ -1,6 +1,6 @@
 # J-Programs — Growth OS project control desk
 
-A working, **local-first web application** for tracking software projects and their real release gates.
+**Canonical public Growth OS dashboard.** A working, local-first web application for tracking software projects and their real release gates. The public `growth-os` repository is a superseded starter/index, not a second app. Authoritative private project records and Movie Assistant source are in `jedwar1017-ui/Program-creation` (restricted access).
 
 ## Features implemented
 - Seed list of eleven Growth OS areas (editable locally)
