@@ -54,9 +54,12 @@ function Start-App {
   return @{ Process = $p; WindowMs = $sw.ElapsedMilliseconds; Exe = $exe.FullName }
 }
 function Stop-App($app) {
-  Stop-Process -Id $app.Process.Id -Force -ErrorAction SilentlyContinue
+  # Close like a user clicking X, so the page can finish saving.
+  $p = $app.Process
+  if (-not $p.HasExited) { [void]$p.CloseMainWindow(); [void]$p.WaitForExit(20000) }
+  if (-not $p.HasExited) { Note 'App did not close within 20 s; forcing it'; Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
   Get-CimInstance Win32_Process -Filter "Name='msedgewebview2.exe'" | Where-Object { $_.CommandLine -like '*com.jprograms.growthos*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-  Start-Sleep -Seconds 2
+  Start-Sleep -Seconds 3
 }
 
 try {
