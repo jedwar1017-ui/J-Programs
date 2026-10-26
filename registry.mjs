@@ -26,3 +26,5 @@ export function summarize(items){
     inProgress:records.filter(x=>x.stage!=="idea"&&x.stage!=="real-task-verified").length};
 }
 export function nextGate(stage){const i=STAGES.indexOf(stage);return i<0?null:STAGES[Math.min(i+1,STAGES.length-1)];}
+// @Pets is a separate digital-companion landscape: kept in storage/backups, never counted as software.
+export function isSoftwareProject(project){return project.name!=="@Pets";}

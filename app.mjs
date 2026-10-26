@@ -1,4 +1,5 @@
-import {SEED, STAGES, STORAGE_KEY, validate, summarize} from "./registry.mjs";
+import {SEED, STAGES, STORAGE_KEY, validate, summarize, isSoftwareProject} from "./registry.mjs";
+import {buildWeeklyReview, REVIEW_FILENAME} from "./weekly-review.mjs";
 const $ = id=>document.getElementById(id);
 const state = {items:read(),query:""};
 function read(){
@@ -10,7 +11,7 @@ function msg(s){$("notice").textContent=s;}
 function element(tag,text,css){const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(css)el.className=css;return el;}
 function render(){
   // Keep legacy @Pets entries in local storage/exports, but do not count or show them as software projects.
-  const softwareItems=state.items.filter(p=>p.name!=="@Pets");
+  const softwareItems=state.items.filter(isSoftwareProject);
   const s=summarize(softwareItems);
   $("count").textContent=s.total;$("active").textContent=s.inProgress;$("verified").textContent=s.verified;
   const container=$("cards");container.replaceChildren();
@@ -32,4 +33,10 @@ $("add-form").addEventListener("submit",e=>{e.preventDefault();const name=$("new
 $("search").addEventListener("input",e=>{state.query=e.target.value.trim().toLowerCase();render();});
 $("backup").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state.items,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="j-programs-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);msg("Backup downloaded; keep it private.");});
 $("restore").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1024*1024)throw Error("Maximum 1 MB");state.items=validate(JSON.parse(await file.text()));save();msg("Imported "+state.items.length+" projects.");}catch(err){msg("Import rejected: "+err.message);}finally{e.target.value="";}});
+$("weekly-review").addEventListener("click",()=>{let url;try{
+  // Uses the full register, not the filtered view, and does not change saved data.
+  const blob=new Blob([buildWeeklyReview(state.items)],{type:"text/markdown;charset=utf-8"});url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=REVIEW_FILENAME;document.body.append(a);a.click();a.remove();
+  msg("Weekly review downloaded ("+REVIEW_FILENAME+"). It may contain private notes.");
+}catch(err){msg("Weekly review failed: "+err.message);}finally{if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}});
 render();
