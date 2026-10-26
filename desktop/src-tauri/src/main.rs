@@ -18,11 +18,24 @@ document.addEventListener('click', function (event) {
 }, true);
 "#;
 
+// Tauri's default WebView2 arguments, kept when the CI test adds a debug port.
+const DEFAULT_WEBVIEW_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection";
+
+// CI acceptance test only: GROWTHOS_TEST_DEBUG_PORT lets the test drive the page.
+// Unset for normal users, so no debug port is opened.
+fn test_debug_port() -> Option<u16> {
+    std::env::var("GROWTHOS_TEST_DEBUG_PORT").ok()?.parse::<u16>().ok().filter(|p| *p >= 1024)
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
+            let mut builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()));
+            if let Some(port) = test_debug_port() {
+                builder = builder.additional_browser_args(&format!("{DEFAULT_WEBVIEW_ARGS} --remote-debugging-port={port}"));
+            }
+            builder
                 .title("Growth OS — J-Programs")
                 .inner_size(1180.0, 820.0)
                 .min_inner_size(360.0, 560.0)

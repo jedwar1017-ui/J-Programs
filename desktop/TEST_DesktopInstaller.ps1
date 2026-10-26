@@ -11,7 +11,7 @@ function Note([string] $s) { Write-Host "::notice title=Desktop test::$s"; $line
 $installDir = Join-Path $env:LOCALAPPDATA 'Growth OS'
 $dataDir = Join-Path $env:LOCALAPPDATA 'com.jprograms.growthos'
 $port = 9333
-$env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=$port"
+$env:GROWTHOS_TEST_DEBUG_PORT = "$port"
 
 function Invoke-Page([string] $expression) {
   $deadline = (Get-Date).AddSeconds(30)
