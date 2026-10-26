@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'Run only on a disposable GitHub Actions Windows runner.' }
 $report = Join-Path $PWD 'ci-desktop-report.txt'
 $lines = [System.Collections.Generic.List[string]]::new()
-function Note([string] $s) { Write-Host $s; $lines.Add($s) }
+function Note([string] $s) { Write-Host "::notice title=Desktop test::$s"; $lines.Add($s) }
 $installDir = Join-Path $env:LOCALAPPDATA 'Growth OS'
 $dataDir = Join-Path $env:LOCALAPPDATA 'com.jprograms.growthos'
 $port = 9333
@@ -116,6 +116,9 @@ try {
   $lines.Add('Not covered: real user PC, keyboard/high-DPI review, offline CI-monitor behaviour, download prompts.')
 } catch {
   $lines.Insert(0, "FAIL: $($_.Exception.Message)")
+  Write-Host "::error title=Desktop test failed::$($_.Exception.Message) (line $($_.InvocationInfo.ScriptLineNumber))"
+  $found = Get-ChildItem $env:LOCALAPPDATA, ([Environment]::GetFolderPath('DesktopDirectory')), ([Environment]::GetFolderPath('Programs')) -Recurse -Depth 2 -ErrorAction SilentlyContinue | Where-Object { $_.Name -like '*Growth*' } | ForEach-Object { $_.FullName }
+  Write-Host "::notice title=Desktop test diagnostics::Files named Growth*: $($found -join ' | ')"
   throw
 } finally {
   $lines | Set-Content $report -Encoding utf8
