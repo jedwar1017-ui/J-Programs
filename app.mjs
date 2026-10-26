@@ -1,4 +1,5 @@
 import {SEED, STAGES, STORAGE_KEY, validate, summarize} from "./registry.mjs";
+import {createWeeklyReview} from "./weekly-review.mjs";
 const $ = id=>document.getElementById(id);
 const state = {items:read(),query:""};
 function read(){
@@ -30,6 +31,22 @@ function render(){
 $("add-form").addEventListener("submit",e=>{e.preventDefault();const name=$("new-name").value.trim();if(!name)return;if(state.items.length>=200){msg("200 project limit reached");return;}
   state.items.push({id:"local-"+Date.now()+"-"+Math.random().toString(36).slice(2),name,lane:$("new-lane").value,stage:"idea",evidence:""});$("new-name").value="";save();msg("Created "+name);});
 $("search").addEventListener("input",e=>{state.query=e.target.value.trim().toLowerCase();render();});
+$("weekly-review").addEventListener("click",()=>{
+  let url;
+  try{
+    // All records, not the on-screen filtered selection; never modifies saved state.
+    const markdown=createWeeklyReview(state.items);
+    const blob=new Blob([markdown],{type:"text/markdown;charset=utf-8"});
+    url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download="j-programs-weekly-review.md";a.click();
+    msg("Weekly report downloaded. It may contain private notes; store it safely.");
+  }catch(err){
+    msg("Weekly report failed: "+String(err?.message||"Unknown error"));
+  }finally{
+    if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+});
 $("backup").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state.items,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="j-programs-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);msg("Backup downloaded; keep it private.");});
 $("restore").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1024*1024)throw Error("Maximum 1 MB");state.items=validate(JSON.parse(await file.text()));save();msg("Imported "+state.items.length+" projects.");}catch(err){msg("Import rejected: "+err.message);}finally{e.target.value="";}});
 render();

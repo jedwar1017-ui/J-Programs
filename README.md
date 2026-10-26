@@ -7,6 +7,7 @@
 - Add project; change lifecycle gate; update an evidence note
 - Filter by project name, lane, or verification gate
 - JSON backup download and JSON restore with basic schema validation
+- Offline **Download weekly review** feature: creates a local UTF-8 Markdown report for every stored record (even when filtered), with dated totals, stage, lane and evidence/blocker notes. Project names and notes are rendered as literal fenced text to prevent Markdown heading injection. Verification claims are labeled user-recorded, not audited. This feature does not upload information.
 - Local browser persistence; no account, API key or cloud backend
 - Read-only public GitHub Actions monitor for three software repositories, initiated by a button; distinguishes passed, failed, pending and unavailable. It needs internet access when clicked.
 - Accessible responsive layout, no external runtime dependency
