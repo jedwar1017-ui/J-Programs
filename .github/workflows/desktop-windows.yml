@@ -1,0 +1,119 @@
+name: Growth OS Windows desktop build
+
+on:
+  push:
+    paths:
+      - 'desktop/**'
+      - '*.html'
+      - '*.mjs'
+      - '.github/workflows/desktop-windows.yml'
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - '*.html'
+      - '*.mjs'
+      - '.github/workflows/desktop-windows.yml'
+  workflow_dispatch:
+    inputs:
+      publish_draft_release:
+        description: 'Also create a DRAFT GitHub Release with the installer (you publish it manually)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Web app unit tests (unchanged app the desktop shell wraps)
+        run: node --test "tests/*.test.mjs"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri
+
+      - name: Copy web app into desktop/web-dist
+        run: node desktop/prepare-web.mjs
+
+      - name: Build Windows installer (Tauri 2, NSIS)
+        working-directory: desktop
+        run: npx --yes @tauri-apps/cli@2 build --ci
+
+      - name: Collect installer and SHA-256
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $setup = Get-ChildItem desktop/src-tauri/target/release/bundle/nsis -Filter '*-setup.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'No NSIS installer produced' }
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item $setup.FullName dist/
+          $hash = (Get-FileHash $setup.FullName -Algorithm SHA256).Hash.ToLower()
+          "$hash  $($setup.Name)" | Set-Content dist/SHA256SUMS.txt -Encoding ascii
+          "INSTALLER=dist/$($setup.Name)" | Add-Content $env:GITHUB_ENV
+          Write-Host "Built $($setup.Name) $hash"
+
+      - name: Install, launch, persist, uninstall test
+        shell: pwsh
+        run: ./desktop/TEST_DesktopInstaller.ps1 -Installer $env:INSTALLER
+
+      - name: Upload installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowthOS-Windows-Setup-unsigned
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowthOS-desktop-test-report
+          path: ci-desktop-report.txt
+          if-no-files-found: ignore
+          retention-days: 30
+
+  draft-release:
+    needs: build-and-test
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_draft_release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: GrowthOS-Windows-Setup-unsigned
+          path: dist
+
+      - name: Create draft release (not published)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="growth-os-desktop-v0.1.0-build${GITHUB_RUN_NUMBER}"
+          cat > notes.md <<NOTES
+          Growth OS (J-Programs) for Windows — one-click installer (unsigned).
+
+          Built and checked by ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} from ${GITHUB_SHA}.
+
+          **Install:** download the -setup.exe, double-click. No admin needed. If Windows SmartScreen warns (unsigned file): More info, then Run anyway.
+
+          **Your browser projects don't move automatically.** In the browser version click Export backup, then in the app use Import JSON.
+
+          **Checked by CI:** install, shortcuts, launch, dashboard loads, add a project, restart keeps it, uninstall.
+          **Not yet checked:** use on your own PC.
+          NOTES
+          gh release create "$tag" dist/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --draft \
+            --title "Growth OS for Windows 0.1.0 (draft, build ${GITHUB_RUN_NUMBER})" --notes-file notes.md
