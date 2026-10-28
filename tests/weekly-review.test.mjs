@@ -91,8 +91,8 @@ test("unicode and line breaks are preserved readably", () => {
   assert.match(md, /> Línea uno ✅\\\n> Line two 🚧\n>\n> After blank/);
 });
 
-test("control characters are stripped", () => {
-  assert.equal(quotedBlock("a\u0000b\u001Bc"), "> abc");
+test("control characters are replaced visibly, not silently dropped", () => {
+  assert.equal(quotedBlock("a\u0000b\u001Bc\u0090d"), "> a\uFFFDb\uFFFDc\uFFFDd");
 });
 
 test("does not mutate the register", () => {
@@ -128,4 +128,36 @@ test("page wiring: button exists beside backup controls and app uses full regist
   assert.match(app, /buildWeeklyReview\(state\.items\)/);
   assert.match(app, /revokeObjectURL\(url\)/);
   assert.doesNotMatch(review + app, /fetch\(|XMLHttpRequest|localStorage\.setItem\([^)]*review/i);
+});
+
+test("Unicode line separators cannot smuggle a heading onto its own line", () => {
+  for (const sep of ["\u2028", "\u2029", "\u0085"]) {
+    const md = buildWeeklyReview([{...SEED[0], name: "Safe" + sep + "# Fake name", evidence: "ok" + sep + "## Fake note"}], NOW);
+    assert.ok(!/[\u2028\u2029\u0085]/.test(md), "separator must not survive");
+    assert.equal(md.split("\n").filter(l => /^ {0,3}#{1,6}(\s|$)/.test(l)).length, 4);
+    assert.match(md, /^### 1\. Safe \\# Fake name$/m);
+    assert.match(md, /^> ok\\$\n^> \\#\\# Fake note$/m);
+  }
+});
+
+test("bidi override controls are removed so text cannot be visually reordered", () => {
+  const md = buildWeeklyReview([{...SEED[0], name: "Report \u202Etxt.exe", evidence: "\u2066note\u2069 שלום"}], NOW);
+  assert.ok(!/[\u202A-\u202E\u2066-\u2069]/.test(md));
+  assert.match(md, /Report txt\\\.exe/);
+  assert.match(md, /> note שלום/);
+});
+
+test("fuzzed hostile text never adds headings, setext underlines or unquoted note lines", () => {
+  const chars = [..."#=-*_`~>|[]()!<&\\\n \t🦊é"], seps = ["\u2028", "\u2029", "\u0085", "\r", "\u202E"];
+  let seed = 7; const rand = n => (seed = (seed * 1103515245 + 12345) % 2147483648) % n;
+  for (let i = 0; i < 2000; i++) {
+    let t = "x"; const len = 1 + rand(60);
+    for (let j = 0; j < len; j++) t += rand(8) ? chars[rand(chars.length)] : seps[rand(seps.length)];
+    const md = buildWeeklyReview([{...SEED[0], name: t.slice(0, 100), evidence: t}, SEED[1]], NOW);
+    const lines = md.split("\n");
+    assert.equal(lines.filter(l => /^ {0,3}#{1,6}(\s|$)/.test(l)).map(l => l.match(/#+/)[0].length).join(), "1,2,2,3,3", t);
+    lines.forEach((l, k) => assert.ok(!/^ {0,3}(=+|-+)\s*$/.test(l) || (l === "---" && lines[k - 1] === ""), t));
+    const start = lines.indexOf("- Evidence or blocker:") + 2;
+    for (let k = start; lines[k] !== "" && k < lines.length; k++) assert.ok(lines[k].startsWith(">"), t);
+  }
 });

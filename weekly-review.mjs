@@ -13,9 +13,16 @@ export function escapeMarkdown(text) {
   return String(text).replace(/[!-\/:-@\[-`{-~]/g, "\\$&");
 }
 
-// Remove control characters other than tab/newline so they cannot hide or reorder text.
+// Normalise text before escaping:
+// - Unicode line/paragraph separators (U+2028, U+2029, NEL U+0085) become real line breaks,
+//   so editors that split on them cannot see an unescaped "# heading" line.
+// - Bidi embedding/override/isolate controls are removed so text cannot be visually reordered.
+// - Other control characters and lone surrogates become U+FFFD, so nothing is dropped silently.
 function clean(text) {
-  return String(text).replace(/\r\n?/g, "\n").replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "");
+  return String(text)
+    .replace(/\r\n?|[\u0085\u2028\u2029]/g, "\n")
+    .replace(/[\u202A-\u202E\u2066-\u2069]/g, "")
+    .replace(/[\u0000-\u0008\u000B-\u001F\u007F-\u009F]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "\uFFFD");
 }
 
 // Single-line form for names used inside a heading.
