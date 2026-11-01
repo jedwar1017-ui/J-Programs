@@ -9,7 +9,7 @@
 - JSON backup download and JSON restore with basic schema validation
 - Local browser persistence; no account, API key or cloud backend
 - Read-only public GitHub Actions monitor for three software repositories, initiated by a button; distinguishes passed, failed, pending and unavailable. It needs internet access when clicked.
-- **Download weekly review:** one button saves `j-programs-weekly-review.md`, a Markdown report of every stored project (ignores the search filter) with UTC date, totals, in-progress and evidence-backed verified counts, and each project's lane, stage and evidence note. Missing notes read *Not provided*; verified items are labelled *user-recorded*, never independently audited. Names and notes are escaped so typed text cannot add headings or sections. Made entirely in the browser: no upload, no network, no change to saved data.
+- **Download weekly review:** one button saves `j-programs-weekly-review.md`, a Markdown report of every stored project (ignores the search filter) with UTC date, totals, in-progress and evidence-backed verified counts, and each project's lane, stage and evidence note. Missing notes read *Not provided*; verified items are labelled *user-recorded*, never independently audited. Names and notes are escaped so typed text cannot add headings or sections; invisible text-direction controls are removed and other control characters show as �. Made entirely in the browser: no upload, no network, no change to saved data.
 - Accessible responsive layout, no external runtime dependency
 
 ## Run and test
