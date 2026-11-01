@@ -8,7 +8,7 @@ const conf = read("tauri.conf.json");
 const caps = read("capabilities/default.json");
 
 test("desktop bundles exactly the web app files the page loads", () => {
-  assert.deepEqual(webFiles(), ["app.mjs", "github-status.mjs", "index.html", "registry.mjs", "weekly-review.mjs"]);
+  assert.deepEqual(webFiles(), ["app.mjs", "github-status.mjs", "index.html", "registry.mjs", "storage.mjs", "weekly-review.mjs"]);
 });
 test("installer is per-user (no admin) and the app loads local files only", () => {
   assert.equal(conf.bundle.windows.nsis.installMode, "currentUser");
@@ -26,3 +26,4 @@ test("page permissions: core events and https links only (no files, shell or htt
   assert.deepEqual(ids, ["core:default", "opener:allow-open-url"]);
   assert.deepEqual(caps.permissions[1].allow, [{url: "https://*"}]);
 });
+
